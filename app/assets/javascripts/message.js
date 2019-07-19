@@ -1,52 +1,49 @@
-$(function(message){
-
-    function buildHTML(message){
-      
-      var imagehtml = message.image == null ? "" : `<img src="${message.image}" class="message_content">`
-      var html =  `<div class="messages">
-                      <p class="character">
-                        ${message.name}
-                          <span class="date">
-                            ${message.date}
-                          </span>
-                      </p>
-                        <p class="message">
-                          ${message.content}
-                      </p>
-                      <p class="message_content">
-                        ${imagehtml}
-                      </p>
-                    </div>`;
+$(function () {
+  function buildHTML(message) {
+    var insertImage = message.image == undefined ? "" : `<img src="${message.image}" class="lower-message__image">`
+    var html = `<div class="message">
+                 <div class="upper-message">
+                  <div class="upper-message__user-name">
+                  ${message.name}
+                  </div>
+                  <div class="upper-message__date">
+                  ${message.date}
+                  </div>
+                  </div>
+                 <div class="lower-meesage">
+                   <p class="lower-message__content">
+                   ${message.content}
+                   </p>
+                   ${insertImage}
+                </div>
+             </div>`;
       return html;
-    }
+  }
   
-    function getScroll() {
-      $('.message_area').animate({ scrollTop: $('.message_area')[0].scrollHeight });
-    }
-  
-  
-    $('#new_form').on('submit',function(e){
+  $('#new_message').on('submit', function (e) {
       e.preventDefault();
       var formData = new FormData(this);
-      var url = $(this).attr('action');
+      var url = $(this).attr("action");
+
       $.ajax({
-        type: 'POST',
-        url: './messages',
-        data: formData,
-        dataType: 'json',
-        processData: false,
-        contentType: false
+          url: url,
+          type: "POST",
+          data: formData,
+          dataType: 'json',
+          processData: false,
+          contentType: false
       })
-      .done(function(data){
-        getScroll();
-        var html = buildHTML(data);
-        $('.message_area').append(html);
-        $('#new_form')[0].reset("");
-        $('.message_form__submit').prop('disabled', false);
-      })
-      .fail(function(){
-        alert('error');
-      });
-    });
-  });
-  
+  .done(function (meesage) {
+      var html = buildHTML(meesage);
+      $('.messages').append(html);
+      $('.messages').animate({ scrollTop: $(".messages")[0].scrollHeight }, 500);
+      $('#new_message')[0].reset("");          
+  })
+  .fail(function () {
+      alert('error');
+  })
+  .always(function(message){
+    $('.form__submit').prop('disabled', false);
+  })
+  })
+});
